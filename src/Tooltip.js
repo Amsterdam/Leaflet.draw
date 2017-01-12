@@ -64,6 +64,11 @@ L.Draw.Tooltip = L.Class.extend({
 			'<span class="leaflet-draw-tooltip-subtext">' + labelText.subtext + '</span>' + '<br />' : '') +
 			'<span>' + labelText.text + '</span>';
 
+		// Hide the tooltip if it is empty
+		if (!labelText.text && !labelText.subtext) {
+			this._container.style.visibility = 'hidden';
+		}
+
 		return this;
 	},
 
