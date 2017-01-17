@@ -61,11 +61,11 @@ L.Draw.Tooltip = L.Class.extend({
 
 		this._container.innerHTML =
 			(labelText.subtext.length > 0 ?
-			'<span class="leaflet-draw-tooltip-subtext">' + labelText.subtext + '</span>' + '<br />' : '') +
-			'<span>' + labelText.text + '</span>';
+				'<span class="leaflet-draw-tooltip-subtext">' + labelText.subtext + '</span>' + '<br />' : '') +
+			(labelText.text.length > 0 ?
+				'<span>' + labelText.text + '</span>' : '');
 
-		// Hide the tooltip if it is empty
-		if (!labelText.text && !labelText.subtext) {
+		if (!this._container.innerHTML.length) {
 			this._container.style.visibility = 'hidden';
 		}
 
@@ -78,9 +78,12 @@ L.Draw.Tooltip = L.Class.extend({
 		var pos = this._map.latLngToLayerPoint(latlng),
 			tooltipContainer = this._container;
 
-		if (this._container) {
+		// Only show the tooltip if it has content
+		if (this._container && this._container.innerHTML.length > 0) {
 			tooltipContainer.style.visibility = 'inherit';
 			L.DomUtil.setPosition(tooltipContainer, pos);
+		} else {
+			this._container.style.visibility = 'hidden';
 		}
 
 		return this;
