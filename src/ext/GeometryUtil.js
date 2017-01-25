@@ -39,12 +39,34 @@ L.GeometryUtil = L.extend(L.GeometryUtil || {}, {
 		return Math.abs(area);
 	},
 
-	// @method readableArea(area, isMetric, precision): string
+    // @method formattedNumber(n, precision): string
+    // Returns n in specified number format (if defined) and precision
+    formattedNumber: function (n, precision) {
+        var formatted = n.toFixed(precision);
+
+        var format = L.drawLocal.format && L.drawLocal.format.numeric,
+            delimiters = format && format.delimiters,
+            thousands = delimiters && delimiters.thousands,
+            decimal = delimiters && delimiters.decimal;
+
+        if (thousands || decimal) {
+            var splitValue = formatted.split('.');
+            formatted = thousands ? splitValue[0].replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1' + thousands) : splitValue[0];
+            decimal = decimal || '.';
+            if (splitValue.length > 1) {
+                formatted = formatted + decimal + splitValue[1];
+            }
+        }
+
+        return formatted;
+    },
+
+    // @method readableArea(area, isMetric, precision): string
 	// Returns a readable area string in yards or metric.
 	// The value will be rounded as defined by the precision option object.
 	readableArea: function (area, isMetric, precision) {
 		var areaStr,
-			units, 
+			units,
 			precision = L.Util.extend({}, defaultPrecision, precision);
 
 		if (isMetric) {
@@ -117,6 +139,7 @@ L.GeometryUtil = L.extend(L.GeometryUtil || {}, {
 		case 'nauticalMile':
 			distance *= 0.53996;
 			distanceStr = _round(distance / 1000, precision['nm']) + ' nm';
+			distanceStr = L.GeometryUtil.formattedNumber(distance / 1000, 2) + ' nm';
 			break;
 		case 'yards':
 		default:
